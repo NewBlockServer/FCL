@@ -1,0 +1,67 @@
+package top.newblock.fcl.ui.setting
+
+import android.content.Context
+import top.newblock.fcl.R
+import top.newblock.fcl.setting.Profiles
+import top.newblock.fcl.ui.PageManager
+import top.newblock.fcl.ui.manage.VersionSettingPage
+import com.tungsten.fcllibrary.component.ui.FCLCommonPage
+import com.tungsten.fcllibrary.component.view.FCLUILayout
+
+class SettingPageManager(
+    context: Context,
+    parent: FCLUILayout,
+    defaultPageId: Int
+) : PageManager(context, parent, defaultPageId) {
+    companion object {
+        @JvmStatic
+        var instance: SettingPageManager? = null
+        const val PAGE_ID_SETTING_GAME: Int = 15030
+        const val PAGE_ID_SETTING_LAUNCHER: Int = 15031
+        const val PAGE_ID_SETTING_ABOUT: Int = 15034
+    }
+
+    init {
+        instance = this
+    }
+
+    private lateinit var versionSettingPage: VersionSettingPage
+    private val launcherSettingPage: LauncherSettingPage by lazy {
+        LauncherSettingPage(
+            context,
+            PAGE_ID_SETTING_LAUNCHER,
+            parent,
+            R.layout.page_setting_launcher
+        )
+    }
+    private val aboutPage: AboutPage by lazy {
+        AboutPage(context, PAGE_ID_SETTING_ABOUT, parent, R.layout.page_setting_about)
+    }
+
+
+    override fun init() {
+        versionSettingPage = VersionSettingPage(
+            context,
+            PAGE_ID_SETTING_GAME,
+            parent,
+            R.layout.page_version_setting,
+            true
+        )
+        versionSettingPage.loadVersion(Profiles.getSelectedProfile(), null)
+    }
+
+    override fun getAllPages(): ArrayList<FCLCommonPage> {
+        return ArrayList<FCLCommonPage>().apply {
+            add(versionSettingPage)
+        }
+    }
+
+    override fun createPageById(id: Int): FCLCommonPage? {
+        val page: FCLCommonPage? = when (id) {
+            PAGE_ID_SETTING_LAUNCHER -> launcherSettingPage
+            PAGE_ID_SETTING_ABOUT -> aboutPage
+            else -> null
+        }
+        return page
+    }
+}
